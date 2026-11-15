@@ -1,0 +1,208 @@
+/* OnyxTube Design System Tokens: 8 WCAG-Verified Editorial & Cinema Themes */
+
+:root,
+[data-theme="studio-dark"] {
+  --color-bg: #111317;
+  --color-sidebar: #15181e;
+  --color-surface: #1b1f27;
+  --color-surface-elevated: #232833;
+  --color-border: #272d3a;
+  --color-border-strong: #373f51;
+  --color-border-input: #6e7584;
+  --color-text: #f2f4f8;
+  --color-text-muted: #a3aab8;
+  --color-accent: #c8371d;
+  --color-accent-hover: #ae2f18;
+  --color-accent-text: #ff8066;
+  --color-on-accent: #ffffff;
+  --color-sponsor: #34d399;
+  --color-danger: #f87171;
+  --color-dock-bg: #0c0e13;
+  --color-dock-surface: #171b24;
+  --color-dock-text: #f3f4f6;
+  --color-dock-muted: #a3aab8;
+
+  --seekbar-bg: rgba(255, 255, 255, 0.24);
+  --seekbar-fill: var(--color-accent);
+  --seekbar-height: 5px;
+  --seekbar-glow: none;
+
+  --font-sans: 'Inter', 'IBM Plex Sans', 'Noto Sans', 'Cantarell', system-ui, sans-serif;
+  --font-display: 'Inter', 'IBM Plex Sans', 'Noto Sans', 'Cantarell', system-ui, sans-serif;
+  --font-serif: 'Newsreader', 'Lora', 'Noto Serif', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+
+  --ui-font-scale: 1;
+  --text-xs: calc(12px * var(--ui-font-scale));
+  --text-sm: calc(13.5px * var(--ui-font-scale));
+  --text-base: calc(15px * var(--ui-font-scale));
+  --text-lg: calc(18px * var(--ui-font-scale));
+  --text-xl: calc(22px * var(--ui-font-scale));
+
+  --radius-control: 8px;
+  --radius-card: 10px;
+  --card-gap: 20px;
+  --card-pad: 6px;
+  --sidebar-width: 222px;
+  --topbar-height: 56px;
+
+  --shadow-popover: 0 14px 36px rgba(0, 0, 0, 0.45);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.28);
+
+  --motion-fast: 140ms;
+  --motion-smooth: 220ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme="warm-paper"] {
+  --color-bg: #f5f1e8;
+  --color-sidebar: #ebe5d8;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #e3dccd;
+  --color-border: #dcd5c7;
+  --color-border-strong: #c4bcab;
+  --color-border-input: #767268;
+  --color-text: #18191c;
+  --color-text-muted: #51545c;
+  --color-accent: #b83016;
+  --color-accent-hover: #9b2712;
+  --color-accent-text: #b83016;
+  --color-on-accent: #ffffff;
+  --color-sponsor: #157f4b;
+  --color-danger: #b91c1c;
+  --color-dock-bg: #111317;
+  --color-dock-surface: #1b1f29;
+  --color-dock-text: #f3f4f6;
+  --color-dock-muted: #a6adbe;
+  --shadow-popover: 0 14px 32px rgba(24, 25, 28, 0.14);
+  --shadow-card: 0 8px 22px rgba(24, 25, 28, 0.08);
+}
+
+[data-theme="cinema-noir"] {
+  --color-bg: #09090b;
+  --color-sidebar: #101014;
+  --color-surface: #17171c;
+  --color-surface-elevated: #212128;
+  --color-border: #282830;
+  --color-border-strong: #3b3a44;
+  --color-border-input: #726e65;
+  --color-text: #f5f2eb;
+  --color-text-muted: #aca79d;
+  --color-accent: #8f5400;
+  --color-accent-hover: #744400;
+  --color-accent-text: #f2b249;
+  --color-on-accent: #ffffff;
+  --color-sponsor: #34d399;
+  --color-danger: #f87171;
+  --color-dock-bg: #070709;
+  --color-dock-surface: #15151a;
+}
+
+[data-theme="matcha-kyoto"] {
+  --color-bg: #0d1411;
+  --color-sidebar: #111b17;
+  --color-surface: #16231d;
+  --color-surface-elevated: #1e3028;
+  --color-border: #24392f;
+  --color-border-strong: #355244;
+  --color-border-input: #638073;
+  --color-text: #edf4ef;
+  --color-text-muted: #9cb5a8;
+  --color-accent: #176e4b;
+  --color-accent-hover: #135c3f;
+  --color-accent-text: #56d9a0;
+  --color-on-accent: #ffffff;
+  --color-sponsor: #56d9a0;
+  --color-danger: #f87171;
+}
+
+[data-theme="matcha-cream"] {
+  --color-bg: #eff3ec;
+  --color-sidebar: #e4ebdf;
+  --color-surface: #fafcf9;
+  --color-surface-elevated: #d8e3d2;
+  --color-border: #cdd9c6;
+  --color-border-strong: #b4c4ac;
+  --color-border-input: #68786e;
+  --color-text: #14221a;
+  --color-text-muted: #47594f;
+  --color-accent: #156943;
+  --color-accent-hover: #115435;
+  --color-accent-text: #156943;
+  --color-on-accent: #ffffff;
+  --color-sponsor: #156943;
+  --color-danger: #b91c1c;
+  --color-dock-bg: #111a15;
+  --color-dock-surface: #1a2820;
+  --color-dock-text: #edf4ef;
+  --color-dock-muted: #9cb5a8;
+  --shadow-popover: 0 14px 32px rgba(20, 34, 26, 0.14);
+  --shadow-card: 0 8px 22px rgba(20, 34, 26, 0.08);
+}
+
+[data-theme="nordic-mist"] {
+  --color-bg: #131820;
+  --color-sidebar: #171e28;
+  --color-surface: #1e2633;
+  --color-surface-elevated: #273243;
+  --color-border: #2c384a;
+  --color-border-strong: #3e4e66;
+  --color-border-input: #717f96;
+  --color-text: #edf1f7;
+  --color-text-muted: #a7b3c7;
+  --color-accent: #1d6c80;
+  --color-accent-hover: #175768;
+  --color-accent-text: #7ad0e6;
+  --color-on-accent: #ffffff;
+  --color-sponsor: #4ade80;
+  --color-danger: #fca5a5;
+}
+
+[data-theme="sunset-sand"] {
+  --color-bg: #f7efe6;
+  --color-sidebar: #ede1d4;
+  --color-surface: #fffcf8;
+  --color-surface-elevated: #e5d5c3;
+  --color-border: #decbb7;
+  --color-border-strong: #c7b098;
+  --color-border-input: #827168;
+  --color-text: #231814;
+  --color-text-muted: #63524a;
+  --color-accent: #a83715;
+  --color-accent-hover: #8d2c0f;
+  --color-accent-text: #a83715;
+  --color-on-accent: #ffffff;
+  --color-sponsor: #157f4b;
+  --color-danger: #b91c1c;
+  --color-dock-bg: #1c1310;
+  --color-dock-surface: #281d18;
+  --color-dock-text: #f7efe6;
+  --color-dock-muted: #c7b6aa;
+  --shadow-popover: 0 14px 32px rgba(35, 24, 20, 0.14);
+  --shadow-card: 0 8px 22px rgba(35, 24, 20, 0.08);
+}
+
+[data-theme="oled-slate"] {
+  --color-bg: #030406;
+  --color-sidebar: #080a0f;
+  --color-surface: #10131a;
+  --color-surface-elevated: #181d27;
+  --color-border: #1e2431;
+  --color-border-strong: #2f384a;
+  --color-border-input: #6e7686;
+  --color-text: #f4f6fa;
+  --color-text-muted: #a1abb9;
+  --color-accent: #c8371d;
+  --color-accent-hover: #ae2f18;
+  --color-accent-text: #ff8066;
+  --color-on-accent: #ffffff;
+  --color-sponsor: #34d399;
+  --color-danger: #f87171;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-smooth: 0ms;
+  }
+}

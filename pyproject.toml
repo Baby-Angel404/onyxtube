@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "onyxtube"
+version = "1.0.0"
+description = "Cross-platform privacy-focused native desktop YouTube client without YouTube branding"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "yt-dlp>=2024.10.0",
+    "pywebview>=5.0; sys_platform == 'win32' or sys_platform == 'darwin'",
+]
+
+[project.scripts]
+onyxtube = "desktop:main"

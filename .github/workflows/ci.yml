@@ -1,0 +1,42 @@
+name: OnyxTube Cross-Platform CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.11"]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Syntax and compile checks
+        run: |
+          node --check app.js
+          python -m py_compile desktop.py server.py test_e2e.py
+
+      - name: Cross-platform server and desktop smoke test
+        env:
+          ONYXTUBE_DISABLE_DESKTOP_NOTIFY: "1"
+        run: |
+          python desktop.py --backend browser --port 0 --smoke-ms 500
+          python -c "import server; srv, port = server.start_background_server('127.0.0.1', 0); import urllib.request; r = urllib.request.urlopen(f'http://127.0.0.1:{port}/api/ytdlp', timeout=5); assert r.status == 200; srv.server_close(); srv.shutdown(); print('SERVER_SMOKE_OK', port)"

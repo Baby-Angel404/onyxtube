@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+.DS_Store
+Thumbs.db
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+.webkit-repro/
+.agents/
+CLAUDE.md

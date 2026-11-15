@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="studio-dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OnyxTube Desktop</title>
+  <link rel="icon" type="image/svg+xml" href="./onyxtube.svg" />
+  <link rel="stylesheet" href="./tokens.css" />
+  <link rel="stylesheet" href="./styles.css" />
+  <style id="userInjectedStyles"></style>
+</head>
+<body>
+  <div id="appShell" class="app-shell">
+    <!-- Mobile backdrop for drawer navigation -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop" hidden></div>
+
+    <!-- Customizable Navigation Shell (Sidebar / Compact Rail / Top Tabs / Floating Dock) -->
+    <aside id="appSidebar" class="app-sidebar" aria-label="Navigasi Utama">
+      <div class="sidebar-brand">
+        <button id="brandHomeBtn" type="button" class="brand-link" title="Buka Beranda OnyxTube">
+          <svg class="brand-svg" width="24" height="24" viewBox="0 0 64 64" aria-hidden="true">
+            <rect x="2" y="2" width="60" height="60" rx="10" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="3"/>
+            <polygon points="24,18 46,32 24,46" fill="var(--color-accent)"/>
+          </svg>
+          <span id="brandLabel" class="brand-label">OnyxTube</span>
+        </button>
+        <button id="sidebarCollapseBtn" type="button" class="icon-btn sidebar-collapse-btn" aria-label="Lipat bilah samping" title="Lipat bilah samping ([)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="9" y1="3" x2="9" y2="21"/>
+          </svg>
+        </button>
+      </div>
+
+      <nav id="sidebarNavList" class="sidebar-nav" aria-label="Daftar Menu">
+        <button type="button" class="nav-item is-active" data-nav="home">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>
+          </svg>
+          <span class="nav-text">Beranda</span>
+        </button>
+
+        <button type="button" class="nav-item" data-nav="subscriptions">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="7" width="18" height="13" rx="2"/>
+            <path d="M7 4h10"/>
+            <polygon points="10,11 16,13.5 10,16" fill="currentColor" stroke="none"/>
+          </svg>
+          <span class="nav-text">Langganan</span>
+          <span id="subCountBadge" class="nav-count" hidden>0</span>
+        </button>
+
+        <button type="button" class="nav-item" data-nav="playlists">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 6h12"/>
+            <path d="M4 12h12"/>
+            <path d="M4 18h8"/>
+            <polygon points="16,14 21,17 16,20" fill="currentColor" stroke="none"/>
+          </svg>
+          <span class="nav-text">Putar Nanti</span>
+          <span id="savedCountBadge" class="nav-count" hidden>0</span>
+        </button>
+
+        <button type="button" class="nav-item" data-nav="history">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/>
+            <polyline points="12 7 12 12 15.5 14"/>
+          </svg>
+          <span class="nav-text">Riwayat</span>
+        </button>
+
+        <button type="button" class="nav-item" data-nav="customize">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="4" y1="6" x2="20" y2="6"/>
+            <circle cx="9" cy="6" r="2" fill="var(--color-sidebar)"/>
+            <line x1="4" y1="12" x2="20" y2="12"/>
+            <circle cx="15" cy="12" r="2" fill="var(--color-sidebar)"/>
+            <line x1="4" y1="18" x2="20" y2="18"/>
+            <circle cx="10" cy="18" r="2" fill="var(--color-sidebar)"/>
+          </svg>
+          <span class="nav-text">Kustomisasi</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+
+      <section class="sidebar-channels" aria-label="Daftar Channel Langganan">
+        <div class="sidebar-section-head">
+          <span class="nav-text">Channel Tersimpan</span>
+        </div>
+        <div id="sidebarChannelList" class="sidebar-channel-list"></div>
+      </section>
+    </aside>
+
+    <!-- Main Desktop Area -->
+    <div class="workspace-column">
+      <!-- Top Desktop Command Bar -->
+      <header class="topbar" role="banner">
+        <div class="topbar-left">
+          <button id="mobileMenuBtn" type="button" class="icon-btn nav-menu-btn" aria-label="Tampilkan atau ciutkan menu navigasi" aria-expanded="true" title="Menu navigasi ([)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+              <line x1="4" y1="6" x2="20" y2="6"/>
+              <line x1="4" y1="12" x2="20" y2="12"/>
+              <line x1="4" y1="18" x2="20" y2="18"/>
+            </svg>
+          </button>
+          <button id="backBtn" type="button" class="icon-btn" hidden aria-label="Kembali ke feed" title="Kembali">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+        </div>
+
+        <form id="searchForm" class="search-form" role="search">
+          <label for="searchInput" class="sr-only">Cari video YouTube atau tempel URL</label>
+          <input
+            id="searchInput"
+            type="text"
+            class="search-input"
+            placeholder="Cari judul video atau tempel tautan YouTube ( / )"
+            autocomplete="off"
+            aria-autocomplete="list"
+            aria-controls="searchSuggestList"
+            aria-expanded="false"
+          />
+          <button id="clearSearchBtn" type="button" class="search-clear-btn" hidden aria-label="Kosongkan pencarian">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+          <button id="searchSubmitBtn" type="submit" class="btn-primary search-submit">Cari</button>
+          <div id="searchSuggestBox" class="search-suggest-box" hidden>
+            <ul id="searchSuggestList" class="search-suggest-list" role="listbox" aria-label="Saran pencarian"></ul>
+          </div>
+        </form>
+
+        <div class="topbar-actions">
+          <button id="queueDrawerBtn" type="button" class="btn-ghost btn-compact" title="Lihat antrean putar" hidden>
+            <span id="queueDrawerBtnLabel">Antrean (0)</span>
+          </button>
+          <button id="shortcutHelpBtn" type="button" class="icon-btn" title="Pintasan Keyboard (?)" aria-label="Daftar pintasan keyboard">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M9.5 9.5a2.5 2.5 0 0 1 4.8.8c0 1.7-2.3 2.2-2.3 3.7"/>
+              <line x1="12" y1="17.5" x2="12.01" y2="17.5"/>
+            </svg>
+          </button>
+          <button id="quickThemeBtn" type="button" class="btn-ghost btn-compact" title="Ganti Terang / Gelap">
+            <span id="quickThemeLabel">Tema: Gelap</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Live operational notice banner (non-error status / error display) -->
+      <div id="statusBar" class="status-bar" role="status" aria-live="polite" hidden>
+        <span id="statusText"></span>
+        <button id="statusRetryBtn" type="button" class="btn-ghost btn-compact" hidden>Coba Lagi</button>
+      </div>
+
+      <main id="contentViewport" class="content-viewport">
+        <!-- VIEW 1: Home / Trending Feed -->
+        <section id="viewHome" class="page-view">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Populer &amp; Jelajah</h1>
+              <p class="view-subtitle">Feed bebas iklan dengan pemutar desktop lokal tanpa logo YouTube</p>
+            </div>
+            <div class="view-header-actions">
+              <button id="refreshHomeBtn" type="button" class="btn-ghost btn-compact">Muat Ulang</button>
+            </div>
+          </div>
+
+          <div id="trendingTabs" class="segment-tabs" role="tablist" aria-label="Kategori Populer">
+            <button type="button" role="tab" class="segment-tab is-active" data-tab="all" aria-selected="true">Semua</button>
+            <button type="button" role="tab" class="segment-tab" data-tab="tech" aria-selected="false">Teknologi</button>
+            <button type="button" role="tab" class="segment-tab" data-tab="gaming" aria-selected="false">Gaming</button>
+            <button type="button" role="tab" class="segment-tab" data-tab="music" aria-selected="false">Musik</button>
+            <button type="button" role="tab" class="segment-tab" data-tab="news" aria-selected="false">Berita</button>
+            <button type="button" role="tab" class="segment-tab" data-tab="sports" aria-selected="false">Olahraga</button>
+          </div>
+
+          <div id="homeSpotlight" class="home-spotlight" hidden>
+            <button id="spotlightPlayArea" type="button" class="spotlight-thumb-btn" aria-label="Putar video sorotan utama">
+              <img id="spotlightThumb" src="" alt="" />
+              <span id="spotlightDuration" class="duration-tag"></span>
+            </button>
+            <div class="spotlight-copy">
+              <div class="spotlight-eyebrow">Sorotan Pilihan</div>
+              <h2 id="spotlightTitle" class="spotlight-title">Judul Sorotan</h2>
+              <p id="spotlightMeta" class="spotlight-meta"></p>
+              <div class="spotlight-actions">
+                <button id="spotlightPlayBtn" type="button" class="btn-primary btn-compact">Putar Sekarang</button>
+                <button id="spotlightSaveBtn" type="button" class="btn-ghost btn-compact">+ Putar Nanti</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="homeGridState" class="state-box" hidden></div>
+          <div id="homeGrid" class="video-grid"></div>
+          <div id="homeMoreBar" class="feed-load-more" hidden>
+            <span id="homeMoreStatus" class="feed-load-more-status">Menggulir untuk video berikutnya...</span>
+            <button id="homeMoreBtn" type="button" class="btn-ghost btn-compact">Muat Lebih Banyak</button>
+          </div>
+        </section>
+
+        <!-- VIEW 2: Search Results -->
+        <section id="viewSearch" class="page-view" hidden>
+          <div class="view-header">
+            <div>
+              <h1 id="searchTitle" class="view-title">Hasil Pencarian</h1>
+              <p id="searchSubtitle" class="view-subtitle">Hasil bersih bebas iklan &amp; otomatis dimuat saat digulir</p>
+            </div>
+          </div>
+          <div id="searchFilterBar" class="segment-tabs" role="tablist" aria-label="Filter durasi pencarian">
+            <button type="button" class="segment-tab is-active" data-duration="all" role="tab" aria-selected="true">Semua Durasi</button>
+            <button type="button" class="segment-tab" data-duration="short" role="tab" aria-selected="false">&lt; 4 Menit</button>
+            <button type="button" class="segment-tab" data-duration="medium" role="tab" aria-selected="false">4 - 20 Menit</button>
+            <button type="button" class="segment-tab" data-duration="long" role="tab" aria-selected="false">&gt; 20 Menit</button>
+          </div>
+          <div id="searchGridState" class="state-box" hidden></div>
+          <div id="searchGrid" class="video-grid"></div>
+          <div id="searchMoreBar" class="feed-load-more" hidden>
+            <span id="searchMoreStatus" class="feed-load-more-status">Menggulir untuk hasil berikutnya...</span>
+            <button id="searchMoreBtn" type="button" class="btn-ghost btn-compact">Muat Lebih Banyak</button>
+          </div>
+        </section>
+
+        <!-- VIEW 2B: Channel Page View -->
+        <section id="viewChannel" class="page-view" hidden>
+          <div id="channelHeaderCard" class="channel-header-card">
+            <div class="channel-header-main">
+              <img id="channelAvatar" class="channel-avatar" src="" alt="" hidden />
+              <div class="channel-header-copy">
+                <h1 id="channelTitle" class="view-title">Channel</h1>
+                <p id="channelSubCount" class="view-subtitle"></p>
+                <p id="channelDescription" class="channel-desc-snippet"></p>
+              </div>
+            </div>
+            <div class="channel-header-actions">
+              <button id="channelSubscribeBtn" type="button" class="btn-primary btn-compact">Berlangganan</button>
+            </div>
+          </div>
+          <div id="channelGridState" class="state-box" hidden></div>
+          <div id="channelGrid" class="video-grid"></div>
+          <div id="channelMoreBar" class="feed-load-more" hidden>
+            <span id="channelMoreStatus" class="feed-load-more-status">Menggulir untuk unggahan lainnya...</span>
+            <button id="channelMoreBtn" type="button" class="btn-ghost btn-compact">Muat Lebih Banyak</button>
+          </div>
+        </section>
+
+        <!-- VIEW 3: Watch Player View (Zero YouTube Logo Native HTML5 Video Player) -->
+        <section id="viewWatch" class="page-view watch-layout" hidden>
+          <div class="watch-primary">
+            <div id="playerFrameShell" class="player-frame-shell">
+              <img id="playerAmbientImg" class="player-ambient-img" src="" alt="" aria-hidden="true" hidden />
+              <div id="playerStage" class="player-stage">
+                <video id="videoPlayer" class="player-video" playsinline preload="auto"></video>
+                <audio id="audioPlayer" preload="auto"></audio>
+
+                <div id="stagePulseHud" class="stage-pulse-hud" hidden aria-hidden="true"></div>
+
+                <div id="playerBusyOverlay" class="player-busy" hidden>
+                  <div class="player-busy-box">
+                    <p id="playerBusyMsg" class="player-busy-text"></p>
+                    <button id="playerRetryBtn" type="button" class="btn-primary btn-compact" hidden>Muat Ulang Stream</button>
+                  </div>
+                </div>
+
+                <div id="upNextOverlay" class="up-next-overlay" hidden aria-live="polite">
+                  <div class="up-next-card">
+                    <div id="upNextCountdownText" class="up-next-kicker">Video selanjutnya dalam 3 detik...</div>
+                    <div class="up-next-body">
+                      <img id="upNextThumb" class="up-next-thumb" src="" alt="" />
+                      <div class="up-next-info">
+                        <div id="upNextTitle" class="up-next-title">Judul Berikutnya</div>
+                        <div id="upNextChannel" class="up-next-channel">Channel</div>
+                      </div>
+                    </div>
+                    <div class="up-next-actions">
+                      <button id="upNextPlayNowBtn" type="button" class="btn-primary btn-compact">Putar Sekarang</button>
+                      <button id="upNextCancelBtn" type="button" class="btn-ghost btn-compact">Batal</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Persistent Miniplayer Control Bar (visible when docked) -->
+              <div id="miniPlayerBar" class="mini-player-bar" hidden aria-label="Kontrol Miniplayer">
+                <div class="mini-progress-track" aria-hidden="true">
+                  <div id="miniProgressFill" class="mini-progress-fill"></div>
+                </div>
+                <div class="mini-bar-row">
+                  <div class="mini-meta">
+                    <div id="miniTitle" class="mini-title">Memutar Video</div>
+                    <div id="miniChannel" class="mini-channel">Channel</div>
+                  </div>
+                  <div class="mini-actions">
+                    <button id="miniPlayPauseBtn" type="button" class="ctrl-btn mini-btn" title="Putar / Jeda (Spasi / K)" aria-label="Putar atau jeda miniplayer">
+                      <svg id="miniIconPlay" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <polygon points="6,4 20,12 6,20"/>
+                      </svg>
+                      <svg id="miniIconPause" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" hidden aria-hidden="true">
+                        <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
+                      </svg>
+                    </button>
+                    <button id="miniNextBtn" type="button" class="ctrl-btn mini-btn" title="Video berikutnya (Shift+N)" aria-label="Putar video berikutnya">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <polygon points="4,5 15,12 4,19"/><rect x="17" y="5" width="3" height="14"/>
+                      </svg>
+                    </button>
+                    <button id="miniExpandBtn" type="button" class="ctrl-btn mini-btn" title="Kembali ke Tampilan Tonton (I)" aria-label="Perluas ke pemutar penuh">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+                      </svg>
+                    </button>
+                    <button id="miniCloseBtn" type="button" class="ctrl-btn mini-btn" title="Tutup Miniplayer" aria-label="Tutup miniplayer">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Custom Sleek Zero-Logo Desktop Player Transport Bar -->
+              <div id="playerControls" class="player-controls" aria-label="Kontrol Pemutar Video">
+                <div class="seek-row">
+                  <div id="seekTrack" class="seek-track" role="slider" tabindex="0" aria-label="Posisi waktu video" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div id="seekHoverBubble" class="seek-hover-bubble" hidden>00:00</div>
+                    <div id="seekBuffer" class="seek-buffer"></div>
+                    <div id="seekFill" class="seek-fill"></div>
+                    <div id="seekThumb" class="seek-thumb" aria-hidden="true"></div>
+                    <div id="chapterMarkers" class="chapter-markers" aria-hidden="true"></div>
+                    <div id="sponsorMarkers" class="sponsor-markers" aria-hidden="true"></div>
+                  </div>
+                </div>
+
+                <div class="controls-bar">
+                  <div class="controls-left">
+                    <button id="playPauseBtn" type="button" class="ctrl-btn ctrl-play" aria-label="Putar atau jeda video (Spasi)" title="Putar / Jeda (Spasi / K)">
+                      <svg id="iconPlay" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <polygon points="6,4 20,12 6,20"/>
+                      </svg>
+                      <svg id="iconPause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" hidden aria-hidden="true">
+                        <rect x="6" y="4" width="4" height="16"/>
+                        <rect x="14" y="4" width="4" height="16"/>
+                      </svg>
+                    </button>
+
+                    <button id="prevVideoBtn" type="button" class="ctrl-btn ctrl-icon" title="Sebelumnya (Shift+P)" aria-label="Video sebelumnya" disabled>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <rect x="4" y="5" width="3" height="14"/><polygon points="20,5 9,12 20,19"/>
+                      </svg>
+                    </button>
+                    <button id="nextVideoBtn" type="button" class="ctrl-btn ctrl-icon" title="Berikutnya (Shift+N)" aria-label="Video berikutnya">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <polygon points="4,5 15,12 4,19"/><rect x="17" y="5" width="3" height="14"/>
+                      </svg>
+                    </button>
+                    <button id="seekBackBtn" type="button" class="ctrl-btn ctrl-compact-lbl" title="Mundur 10 detik (J)" aria-label="Mundur 10 detik">-10d</button>
+                    <button id="seekFwdBtn" type="button" class="ctrl-btn ctrl-compact-lbl" title="Maju 10 detik (L)" aria-label="Maju 10 detik">+10d</button>
+
+                    <div class="volume-group">
+                      <button id="muteBtn" type="button" class="ctrl-btn ctrl-icon" aria-label="Bisukan suara (M)" title="Bisukan (M)">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/>
+                          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                        </svg>
+                      </button>
+                      <input id="volumeSlider" type="range" class="volume-slider" min="0" max="1" step="0.05" value="1" aria-label="Volume suara" />
+                    </div>
+
+                    <span id="timeDisplay" class="time-readout">00:00 / 00:00</span>
+                  </div>
+
+                  <div class="controls-right">
+                    <label class="sr-only" for="speedSelect">Kecepatan putar</label>
+                    <select id="speedSelect" class="ctrl-select" title="Kecepatan putar">
+                      <option value="0.5">0.5x</option>
+                      <option value="0.75">0.75x</option>
+                      <option value="1" selected>1.0x</option>
+                      <option value="1.25">1.25x</option>
+                      <option value="1.5">1.5x</option>
+                      <option value="2">2.0x</option>
+                    </select>
+
+                    <label class="sr-only" for="qualitySelect">Resolusi video</label>
+                    <select id="qualitySelect" class="ctrl-select" title="Resolusi stream">
+                      <option value="">Otomatis</option>
+                    </select>
+
+                    <label class="sr-only" for="sleepTimerSelect">Sleep Timer</label>
+                    <select id="sleepTimerSelect" class="ctrl-select" title="Sleep Timer (Berhenti otomatis)">
+                      <option value="">Timer Mati</option>
+                      <option value="15">Tidur 15m</option>
+                      <option value="30">Tidur 30m</option>
+                      <option value="60">Tidur 60m</option>
+                      <option value="end">Akhir Video</option>
+                    </select>
+                    <span id="sleepTimerBadge" class="ctrl-compact-lbl sleep-timer-badge" hidden title="Sisa waktu Sleep Timer"></span>
+
+                    <button id="loopBtn" type="button" class="ctrl-btn ctrl-icon" aria-pressed="false" aria-label="Putar ulang video" title="Putar Ulang Otomatis">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                      </svg>
+                    </button>
+
+                    <button id="ccBtn" type="button" class="ctrl-btn ctrl-compact-lbl" aria-pressed="false" title="Subtitle / CC (C)">CC</button>
+                    <label class="sr-only" for="ccSelect">Bahasa subtitle</label>
+                    <select id="ccSelect" class="ctrl-select" title="Pilih Bahasa Subtitle" hidden>
+                      <option value="">Teks Mati</option>
+                    </select>
+
+                    <button id="sponsorToggleBtn" type="button" class="ctrl-btn ctrl-compact-lbl is-toggled" aria-pressed="true" title="Lewati segmen SponsorBlock otomatis">
+                      Sponsor
+                    </button>
+
+                    <button id="ambientToggleBtn" type="button" class="ctrl-btn ctrl-icon is-toggled" aria-pressed="true" title="Ambient Mode (Pencahayaan Sinema)" aria-label="Mode Ambient">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/>
+                      </svg>
+                    </button>
+
+                    <button id="miniPlayerBtn" type="button" class="ctrl-btn ctrl-icon" title="Mode Miniplayer (I)" aria-label="Mode Miniplayer">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="4" width="18" height="14" rx="2"/><rect x="12" y="10" width="7" height="6" rx="1" fill="currentColor" stroke="none"/>
+                      </svg>
+                    </button>
+
+                    <button id="pipBtn" type="button" class="ctrl-btn ctrl-compact-lbl" title="Picture-in-Picture (P)">PiP</button>
+
+                    <button id="theaterBtn" type="button" class="ctrl-btn ctrl-icon" title="Mode Sinema (T)" aria-label="Mode Sinema">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="2" y="5" width="20" height="14" rx="2"/>
+                      </svg>
+                    </button>
+
+                    <button id="fullscreenBtn" type="button" class="ctrl-btn ctrl-icon" title="Layar Penuh (F)" aria-label="Layar Penuh">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Video Details & Actions -->
+            <div class="watch-meta-card">
+              <h1 id="watchTitle" class="watch-title">Judul Video</h1>
+
+              <div class="watch-channel-row">
+                <div class="channel-info">
+                  <div class="channel-title-line">
+                    <button id="watchChannelBtn" type="button" class="channel-link-btn" title="Buka halaman channel">
+                      <span id="watchChannel" class="channel-name">Channel</span>
+                    </button>
+                    <span id="watchSubCount" class="channel-sub-count"></span>
+                  </div>
+                  <span id="watchStats" class="watch-stats"></span>
+                </div>
+                <div class="watch-action-buttons">
+                  <div class="like-pill-group" role="group" aria-label="Tanggapan video">
+                    <button id="likeBtn" type="button" class="btn-ghost btn-compact like-btn" aria-pressed="false" title="Suka video ini">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>
+                      </svg>
+                      <span id="likeCountText">Suka</span>
+                    </button>
+                    <button id="dislikeBtn" type="button" class="btn-ghost btn-compact dislike-btn" aria-pressed="false" title="Tidak suka video ini" aria-label="Tidak suka video ini">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <button id="shareBtn" type="button" class="btn-ghost btn-compact" title="Salin tautan video dengan timestamp">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    </svg>
+                    <span>Bagikan</span>
+                  </button>
+                  <button id="subscribeBtn" type="button" class="btn-primary btn-compact">Berlangganan</button>
+                  <button id="saveVideoBtn" type="button" class="btn-ghost btn-compact">Simpan ke Putar Nanti</button>
+                </div>
+              </div>
+
+              <div id="sponsorInfoRow" class="sponsor-info-row">
+                <span id="sponsorStatusText" class="sponsor-status-text">SponsorBlock: memeriksa segmen...</span>
+                <span id="activeChapterBadge" class="active-chapter-badge" hidden></span>
+              </div>
+
+              <details class="watch-desc-box">
+                <summary>Deskripsi &amp; Detail Video</summary>
+                <pre id="watchDescription" class="watch-description"></pre>
+              </details>
+
+              <div id="chaptersSection" class="chapters-section" hidden>
+                <div class="chapters-header">
+                  <span class="panel-title">Daftar Bab Video</span>
+                  <span id="chaptersCount" class="watch-stats"></span>
+                </div>
+                <div id="chaptersList" class="chapters-list"></div>
+              </div>
+
+              <section id="commentsSection" class="comments-section" aria-label="Komentar video">
+                <div class="comments-header">
+                  <h2 class="panel-title">Komentar Teratas</h2>
+                  <span id="commentsCount" class="watch-stats"></span>
+                </div>
+                <div id="commentsState" class="comments-state" hidden></div>
+                <div id="commentsList" class="comments-list"></div>
+                <div id="commentsMoreBar" class="feed-load-more" hidden>
+                  <span id="commentsMoreStatus" class="feed-more-status">Gulir untuk memuat komentar berikutnya</span>
+                  <button id="commentsMoreBtn" class="ctrl-btn btn-compact" type="button">Muat komentar lagi</button>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <aside id="upNextPanel" class="watch-secondary" aria-label="Video Terkait Berikutnya">
+            <div class="secondary-header-row">
+              <h2 class="secondary-heading">Berikutnya</h2>
+              <button id="autoNextToggleBtn" type="button" class="auto-next-pill is-toggled" aria-pressed="true" title="Putar otomatis video berikutnya saat pemutaran selesai">
+                Putar Otomatis
+              </button>
+            </div>
+            <div id="relatedList" class="related-list"></div>
+          </aside>
+        </section>
+
+        <!-- VIEW 4: Subscriptions -->
+        <section id="viewSubscriptions" class="page-view" hidden>
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Langganan Lokal</h1>
+              <p class="view-subtitle">Rilisan terbaru dari channel tersimpan tanpa akun Google</p>
+            </div>
+            <div class="view-header-actions">
+              <button id="subsNotifyBtn" type="button" class="btn-ghost btn-compact is-toggled" aria-pressed="true" title="Notifikasi desktop &amp; aplikasi saat channel rilis video baru">Notifikasi: Aktif</button>
+              <button id="checkSubsUpdatesBtn" type="button" class="btn-ghost btn-compact" title="Periksa unggahan terbaru &amp; kirim notifikasi">Cek Rilisan</button>
+              <button id="refreshSubsBtn" type="button" class="btn-ghost btn-compact">Perbarui Feed</button>
+            </div>
+          </div>
+          <div id="subsNewBanner" class="subs-new-banner" hidden role="status" aria-live="polite"></div>
+          <div id="subsChannelPills" class="channel-chip-bar"></div>
+          <div id="subsGridState" class="state-box" hidden></div>
+          <div id="subsGrid" class="video-grid"></div>
+        </section>
+
+        <!-- VIEW 5: Watch Later / Playlists -->
+        <section id="viewPlaylists" class="page-view" hidden>
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Putar Nanti &amp; Koleksi</h1>
+              <p class="view-subtitle">Video tersimpan secara lokal pada desktop Anda</p>
+            </div>
+            <button id="clearSavedBtn" type="button" class="btn-ghost btn-compact">Kosongkan Daftar</button>
+          </div>
+          <div id="playlistTabs" class="segment-tabs" role="tablist" aria-label="Kategori koleksi lokal">
+            <button type="button" class="segment-tab is-active" data-ptab="saved" role="tab" aria-selected="true">Putar Nanti</button>
+            <button type="button" class="segment-tab" data-ptab="liked" role="tab" aria-selected="false">Video Disukai</button>
+          </div>
+          <div id="savedGridState" class="state-box" hidden></div>
+          <div id="savedGrid" class="video-grid"></div>
+        </section>
+
+        <!-- Keyboard Shortcuts Modal -->
+        <div id="shortcutHelpModal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="shortcutModalTitle">
+          <div class="modal-card">
+            <div class="modal-header">
+              <h2 id="shortcutModalTitle" class="panel-title">Pintasan Keyboard OnyxTube</h2>
+              <button id="closeShortcutModalBtn" type="button" class="icon-btn" aria-label="Tutup panduan pintasan">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div class="shortcut-grid">
+              <div class="shortcut-row"><kbd>Spasi / K</kbd><span>Putar atau jeda video</span></div>
+              <div class="shortcut-row"><kbd>I</kbd><span>Beralih mode Miniplayer</span></div>
+              <div class="shortcut-row"><kbd>C</kbd><span>Aktifkan / matikan Subtitle (CC)</span></div>
+              <div class="shortcut-row"><kbd>J / L</kbd><span>Mundur atau maju 10 detik</span></div>
+              <div class="shortcut-row"><kbd>Panah Kiri / Kanan</kbd><span>Mundur atau maju 5 detik</span></div>
+              <div class="shortcut-row"><kbd>Panah Atas / Bawah</kbd><span>Naik / turunkan volume 5%</span></div>
+              <div class="shortcut-row"><kbd>0 - 9</kbd><span>Lompat ke posisi 0% - 90%</span></div>
+              <div class="shortcut-row"><kbd>M</kbd><span>Bisukan / nyalakan suara</span></div>
+              <div class="shortcut-row"><kbd>F</kbd><span>Layar penuh</span></div>
+              <div class="shortcut-row"><kbd>T</kbd><span>Mode Sinema</span></div>
+              <div class="shortcut-row"><kbd>P</kbd><span>Picture-in-Picture</span></div>
+              <div class="shortcut-row"><kbd>Shift + P</kbd><span>Putar video sebelumnya</span></div>
+              <div class="shortcut-row"><kbd>Shift + N</kbd><span>Putar video berikutnya</span></div>
+              <div class="shortcut-row"><kbd>&lt; / &gt;</kbd><span>Turunkan / naikkan kecepatan 0.25x</span></div>
+              <div class="shortcut-row"><kbd>/</kbd><span>Fokus kolom pencarian</span></div>
+              <div class="shortcut-row"><kbd>?</kbd><span>Buka atau tutup panduan ini</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 6: History -->
+        <section id="viewHistory" class="page-view" hidden>
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Riwayat Tontonan</h1>
+              <p class="view-subtitle">Disimpan lokal di perangkat Anda untuk melanjutkan tontonan</p>
+            </div>
+            <button id="clearHistoryBtn" type="button" class="btn-ghost btn-compact">Hapus Riwayat</button>
+          </div>
+          <div id="historyGridState" class="state-box" hidden></div>
+          <div id="historyGrid" class="video-grid"></div>
+        </section>
+
+        <!-- VIEW 7: Live GUI Customization Studio (User-Modifiable Desktop Design) -->
+        <section id="viewCustomize" class="page-view" hidden>
+          <div class="view-header ft-settings-header">
+            <div>
+              <h1 class="view-title">Pengaturan FreeTube &amp; Studio Tampilan</h1>
+              <p class="view-subtitle">Kelola preferensi umum, tema visual, pemutar bebas iklan, SponsorBlock, mode bebas gangguan, dan data lokal</p>
+            </div>
+            <div class="view-header-actions">
+              <div class="ft-settings-search-wrap">
+                <input id="ftSettingsSearchInput" type="search" class="ctrl-input ft-settings-search" placeholder="Cari pengaturan (mis. tema, resolusi, sponsor)..." aria-label="Cari pengaturan" />
+              </div>
+              <button id="exportThemeBtn" type="button" class="btn-ghost btn-compact">Ekspor Tema</button>
+              <label for="importThemeInput" class="btn-ghost btn-compact cursor-pointer">
+                Impor Tema
+                <input id="importThemeInput" type="file" accept="application/json" hidden />
+              </label>
+              <button id="resetThemeBtn" type="button" class="btn-ghost btn-compact">Reset Bawaan</button>
+            </div>
+          </div>
+
+          <div class="ft-settings-shell">
+            <aside id="ftSettingsNav" class="ft-settings-sidebar" aria-label="Kategori Pengaturan FreeTube">
+              <button type="button" class="ft-settings-nav-btn is-active" data-ft-cat="all">
+                <span class="ft-cat-dot"></span>
+                <span>Semua Pengaturan</span>
+              </button>
+              <button type="button" class="ft-settings-nav-btn" data-ft-cat="general">
+                <span class="ft-cat-dot"></span>
+                <span>Pengaturan Umum</span>
+              </button>
+              <button type="button" class="ft-settings-nav-btn" data-ft-cat="theme">
+                <span class="ft-cat-dot"></span>
+                <span>Tema &amp; Tampilan</span>
+              </button>
+              <button type="button" class="ft-settings-nav-btn" data-ft-cat="player">
+                <span class="ft-cat-dot"></span>
+                <span>Pengaturan Pemutar</span>
+              </button>
+              <button type="button" class="ft-settings-nav-btn" data-ft-cat="sponsorblock">
+                <span class="ft-cat-dot"></span>
+                <span>SponsorBlock &amp; Privasi</span>
+              </button>
+              <button type="button" class="ft-settings-nav-btn" data-ft-cat="distraction">
+                <span class="ft-cat-dot"></span>
+                <span>Bebas Gangguan</span>
+              </button>
+              <button type="button" class="ft-settings-nav-btn" data-ft-cat="data">
+                <span class="ft-cat-dot"></span>
+                <span>Data, Langganan &amp; CSS</span>
+              </button>
+            </aside>
+
+            <div class="ft-settings-content">
+              <div class="customize-grid">
+                <!-- 1. GENERAL SETTINGS -->
+                <div class="customize-panel" data-ft-section="general">
+                  <div class="ft-panel-head">
+                    <span class="ft-section-tag">General</span>
+                    <h2 class="panel-heading">Pengaturan Umum &amp; Navigasi</h2>
+                  </div>
+
+                  <div class="control-group">
+                    <label for="navLayoutSelect" class="control-label">Posisi &amp; Bentuk Bilah Navigasi</label>
+                    <select id="navLayoutSelect" class="ctrl-select full-width">
+                      <option value="sidebar">Sidebar Editorial (Samping Penuh)</option>
+                      <option value="compact-rail">Rel Ikon Ringkas (Compact Rail)</option>
+                      <option value="topbar-tabs">Bar Atas YouTube (Topbar Tabs)</option>
+                      <option value="floating-dock">Dock Mengambang (Floating Dock)</option>
+                    </select>
+                  </div>
+
+                  <div class="control-group">
+                    <label for="searchAlignSelect" class="control-label">Bentuk Kotak Pencarian Atas</label>
+                    <select id="searchAlignSelect" class="ctrl-select full-width">
+                      <option value="center">Seimbang Tengah</option>
+                      <option value="wide">Lebar Maksimal</option>
+                      <option value="compact">Ringkas</option>
+                    </select>
+                  </div>
+
+                  <div class="control-group">
+                    <label for="brandTitleInput" class="control-label">Nama Aplikasi di Bilah Atas</label>
+                    <input id="brandTitleInput" type="text" class="ctrl-input full-width" maxlength="24" value="OnyxTube" placeholder="OnyxTube" />
+                  </div>
+
+                  <div class="control-group">
+                    <span class="control-label">Urutan &amp; Visibilitas Menu Navigasi</span>
+                    <div id="navOrderEditor" class="nav-order-editor"></div>
+                  </div>
+                </div>
+
+                <!-- 2. THEME & APPEARANCE -->
+                <div class="customize-panel" data-ft-section="theme">
+                  <div class="ft-panel-head">
+                    <span class="ft-section-tag">Theme</span>
+                    <h2 class="panel-heading">Tema Warna &amp; Karakter Visual</h2>
+                  </div>
+                  <div id="presetList" class="preset-grid"></div>
+
+                  <h3 class="panel-subheading mt-section">Penyesuaian Warna Kustom</h3>
+                  <div class="field-row">
+                    <label class="color-field">
+                      <span>Warna Aksen</span>
+                      <input id="customAccentInput" type="color" value="#c8371d" />
+                    </label>
+                    <label class="color-field">
+                      <span>Latar Utama</span>
+                      <input id="customBgInput" type="color" value="#111216" />
+                    </label>
+                    <label class="color-field">
+                      <span>Permukaan Kartu</span>
+                      <input id="customSurfaceInput" type="color" value="#191b22" />
+                    </label>
+                  </div>
+
+                  <div class="field-row-2 mt-section">
+                    <div class="control-group">
+                      <label for="cardStyleSelect" class="control-label">Bentuk Kartu Video</label>
+                      <select id="cardStyleSelect" class="ctrl-select full-width">
+                        <option value="editorial">Editorial Tanpa Bingkai</option>
+                        <option value="framed">Berbingkai Halus</option>
+                        <option value="elevated">Mengambang Berbayang</option>
+                      </select>
+                    </div>
+                    <div class="control-group">
+                      <label for="fontPresetSelect" class="control-label">Karakter Tipografi</label>
+                      <select id="fontPresetSelect" class="ctrl-select full-width">
+                        <option value="sans">Sans Modern (Bersih)</option>
+                        <option value="editorial">Serif Majalah (MUBI)</option>
+                        <option value="mono">Mono Studio (Teknis)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="control-group">
+                    <label for="densitySelect" class="control-label">Kepadatan Grid Kartu</label>
+                    <select id="densitySelect" class="ctrl-select full-width">
+                      <option value="comfortable">Nyaman (celah lapang, fokus visual)</option>
+                      <option value="compact">Padat (muat lebih banyak video)</option>
+                    </select>
+                  </div>
+
+                  <div class="field-row-2">
+                    <div class="control-group">
+                      <label for="radiusRange" class="control-label">Sudut Kartu: <span id="radiusValueLabel">10px</span></label>
+                      <input id="radiusRange" type="range" min="0" max="16" step="2" value="10" />
+                    </div>
+                    <div class="control-group">
+                      <label for="fontScaleRange" class="control-label">Skala Teks: <span id="fontScaleLabel">100%</span></label>
+                      <input id="fontScaleRange" type="range" min="0.9" max="1.15" step="0.05" value="1" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. PLAYER SETTINGS -->
+                <div class="customize-panel" data-ft-section="player">
+                  <div class="ft-panel-head">
+                    <span class="ft-section-tag">Player</span>
+                    <h2 class="panel-heading">Pengaturan Pemutar &amp; Seekbar</h2>
+                  </div>
+
+                  <div class="field-row-2">
+                    <div class="control-group">
+                      <label for="defaultQualitySelect" class="control-label">Resolusi Stream Bawaan</label>
+                      <select id="defaultQualitySelect" class="ctrl-select full-width">
+                        <option value="720">720p HD (Cepat &amp; Tajam)</option>
+                        <option value="1080">1080p Full HD</option>
+                        <option value="480">480p Hemat Kuota</option>
+                        <option value="360">360p Koneksi Lambat</option>
+                      </select>
+                    </div>
+                    <div class="control-group">
+                      <label for="defaultSpeedSelect" class="control-label">Kecepatan Putar Bawaan</label>
+                      <select id="defaultSpeedSelect" class="ctrl-select full-width">
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1.0x Normal</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2.0x</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="control-group">
+                    <label for="playerBarModeSelect" class="control-label">Mode Bilah Kontrol Video</label>
+                    <select id="playerBarModeSelect" class="ctrl-select full-width">
+                      <option value="dock">Dock Konsol Bawah (Selalu Terlihat)</option>
+                      <option value="overlay">Overlay YouTube (Menyatu di Frame)</option>
+                    </select>
+                  </div>
+
+                  <div class="control-group">
+                    <label for="seekbarStyleSelect" class="control-label">Gaya Seekbar Pemutar</label>
+                    <select id="seekbarStyleSelect" class="ctrl-select full-width">
+                      <option value="accent">Mengikuti Tema Aktif</option>
+                      <option value="youtube-classic">YouTube Merah Klasik</option>
+                      <option value="cinema-gold">Cinema Gold</option>
+                      <option value="ocean-wave">Gradasi Samudra</option>
+                      <option value="aurora-prism">Aurora Prisma</option>
+                    </select>
+                  </div>
+
+                  <div class="field-row-2">
+                    <label class="color-field">
+                      <span>Warna Kustom Seekbar</span>
+                      <input id="customSeekbarInput" type="color" value="#ff1e2d" />
+                    </label>
+                    <div class="control-group">
+                      <label for="seekbarHeightRange" class="control-label">Tebal Seekbar: <span id="seekbarHeightLabel">5px</span></label>
+                      <input id="seekbarHeightRange" type="range" min="3" max="10" step="1" value="5" />
+                    </div>
+                  </div>
+
+                  <div class="checkbox-stack">
+                    <label class="check-row">
+                      <input id="optAutoPlayNext" type="checkbox" checked />
+                      <span>Putar video berikutnya secara otomatis setelah selesai</span>
+                    </label>
+                    <label class="check-row">
+                      <input id="optAmbientMode" type="checkbox" checked />
+                      <span>Aktifkan cahaya Ambient Mode mengikuti thumbnail</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- 4. SPONSORBLOCK & PRIVACY -->
+                <div class="customize-panel" data-ft-section="sponsorblock">
+                  <div class="ft-panel-head">
+                    <span class="ft-section-tag">SponsorBlock</span>
+                    <h2 class="panel-heading">SponsorBlock &amp; Ekstraktor Privasi</h2>
+                  </div>
+
+                  <div class="checkbox-stack">
+                    <label class="check-row">
+                      <input id="optSponsorBlock" type="checkbox" checked />
+                      <span>Aktifkan SponsorBlock lewati segmen otomatis secara bawaan</span>
+                    </label>
+                    <label class="check-row">
+                      <input id="optSbSponsor" type="checkbox" checked />
+                      <span>Lewati kategori <strong>Sponsor Utama</strong> (segmen promosi berbayar)</span>
+                    </label>
+                    <label class="check-row">
+                      <input id="optSbSelfpromo" type="checkbox" checked />
+                      <span>Lewati kategori <strong>Promosi Diri &amp; Merchandise</strong></span>
+                    </label>
+                    <label class="check-row">
+                      <input id="optSbIntro" type="checkbox" checked />
+                      <span>Lewati kategori <strong>Intro / Pembuka Animasi</strong></span>
+                    </label>
+                    <label class="check-row">
+                      <input id="optSbOutro" type="checkbox" checked />
+                      <span>Lewati kategori <strong>Outro / Kartu Akhir</strong></span>
+                    </label>
+                    <label class="check-row">
+                      <input id="optAutoUpdateYtdlp" type="checkbox" checked />
+                      <span>Periksa &amp; perbarui mesin ekstraktor <code>yt-dlp</code> otomatis</span>
+                    </label>
+                  </div>
+
+                  <div class="ytdlp-maintenance-row">
+                    <div class="ytdlp-meta">
+                      <span class="control-label">Ekstraktor <code>yt-dlp</code>:</span>
+                      <span id="ytdlpStatusText" class="ytdlp-status-pill">Memeriksa versi...</span>
+                    </div>
+                    <button id="ytdlpUpdateBtn" type="button" class="btn-ghost btn-compact">Perbarui yt-dlp</button>
+                  </div>
+                </div>
+
+                <!-- 5. DISTRACTION FREE SETTINGS (FreeTube Signature) -->
+                <div class="customize-panel" data-ft-section="distraction">
+                  <div class="ft-panel-head">
+                    <span class="ft-section-tag">Distraction Free</span>
+                    <h2 class="panel-heading">Pengaturan Bebas Gangguan</h2>
+                  </div>
+                  <p class="panel-help">Sembunyikan elemen pemicu klik atau metrik adiktif seperti di FreeTube Distraction Free Settings.</p>
+
+                  <div class="checkbox-stack">
+                    <label class="check-row">
+                      <input id="optHideViews" type="checkbox" />
+                      <span>Sembunyikan jumlah penonton pada kartu &amp; pemutar</span>
+                    </label>
+                    <label class="check-row">
+                      <input id="optHideRelated" type="checkbox" />
+                      <span>Sembunyikan panel rekomendasi "Berikutnya" saat menonton</span>
+                    </label>
+                    <label class="check-row">
+                      <input id="optShowSpotlight" type="checkbox" checked />
+                      <span>Tampilkan sorotan utama (Hero Banner) di Beranda</span>
+                    </label>
+                    <label class="check-row">
+                      <input id="optHideComments" type="checkbox" />
+                      <span>Sembunyikan kolom komentar di bawah pemutar video</span>
+                    </label>
+                    <label class="check-row">
+                      <input id="optHideShorts" type="checkbox" />
+                      <span>Sembunyikan video berdurasi pendek (&lt; 60 detik / Shorts) dari feed</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- 6. DATA, SUBSCRIPTIONS & CUSTOM CSS -->
+                <div class="customize-panel" data-ft-section="data">
+                  <div class="ft-panel-head">
+                    <span class="ft-section-tag">Data &amp; Subscriptions</span>
+                    <h2 class="panel-heading">Langganan, Cadangan Data &amp; Cache</h2>
+                  </div>
+
+                  <div class="checkbox-stack">
+                    <label class="check-row">
+                      <input id="optSubsNotify" type="checkbox" checked />
+                      <span>Aktifkan notifikasi rilisan baru dari channel langganan</span>
+                    </label>
+                  </div>
+
+                  <div class="ft-data-actions-grid">
+                    <button id="exportFullDataBtn" type="button" class="btn-ghost btn-compact">Ekspor Semua Data &amp; Langganan</button>
+                    <label for="importFullDataInput" class="btn-ghost btn-compact cursor-pointer">
+                      Impor Data / FreeTube JSON
+                      <input id="importFullDataInput" type="file" accept="application/json" hidden />
+                    </label>
+                    <button id="clearStreamCacheBtn" type="button" class="btn-ghost btn-compact">Segarkan Cache Stream</button>
+                  </div>
+                </div>
+
+                <!-- 7. LIVE CSS INJECTION -->
+                <div class="customize-panel customize-panel-wide" data-ft-section="data">
+                  <div class="ft-panel-head">
+                    <span class="ft-section-tag">Custom CSS</span>
+                    <h2 class="panel-heading">Injeksi CSS Langsung (Custom Stylesheet)</h2>
+                  </div>
+                  <p class="panel-help">Tulis CSS kustom untuk mengubah jarak, font, warna panel, atau komponen UI desktop secara real-time.</p>
+                  <label for="userCssInput" class="sr-only">Editor CSS kustom</label>
+                  <textarea id="userCssInput" class="css-editor" rows="5" spellcheck="false" placeholder="/* Contoh: .video-card { border-radius: 14px; } */"></textarea>
+                  <div class="editor-actions">
+                    <button id="applyCssBtn" type="button" class="btn-primary btn-compact">Terapkan CSS</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Interactive Queue Drawer -->
+  <aside id="queueDrawer" class="queue-drawer" aria-label="Antrean putar video" hidden>
+    <div class="queue-drawer-head">
+      <div>
+        <h2 class="queue-drawer-title">Antrean Putar</h2>
+        <span id="queueDrawerCount" class="queue-drawer-sub">0 video</span>
+      </div>
+      <div class="queue-drawer-actions">
+        <button id="queueShuffleBtn" type="button" class="btn-ghost btn-compact">Acak</button>
+        <button id="queueClearBtn" type="button" class="btn-ghost btn-compact">Kosongkan</button>
+        <button id="queueDrawerClose" type="button" class="icon-btn" aria-label="Tutup antrean">&#10005;</button>
+      </div>
+    </div>
+    <div id="queueDrawerList" class="queue-drawer-list"></div>
+  </aside>
+
+  <script src="./app.js"></script>
+</body>
+</html>
