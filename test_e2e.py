@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import threading
 import time
@@ -6,7 +7,13 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent
-ARTIFACT_DIR = Path("/home/qwerty/.gemini/antigravity/brain/5215d074-2e70-48d5-8f7f-cf9ccb251bd7")
+_DEFAULT_ARTIFACT_DIR = Path("/home/qwerty/.gemini/antigravity/brain/5215d074-2e70-48d5-8f7f-cf9ccb251bd7")
+ARTIFACT_DIR = Path(
+    os.environ.get(
+        "ONYXTUBE_ARTIFACT_DIR",
+        str(_DEFAULT_ARTIFACT_DIR if _DEFAULT_ARTIFACT_DIR.parent.exists() else ROOT / "dist" / "test-screens"),
+    )
+)
 SCREENS_DIR = ROOT.parent / "replica" / "clone-screens"
 ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
 SCREENS_DIR.mkdir(parents=True, exist_ok=True)
