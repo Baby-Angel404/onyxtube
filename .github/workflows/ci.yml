@@ -41,12 +41,18 @@ jobs:
           python desktop.py --backend browser --port 0 --smoke-ms 500
           python -c "import server, urllib.request; srv, port = server.start_background_server('127.0.0.1', 0); r = urllib.request.urlopen(f'http://127.0.0.1:{port}/api/ytdlp', timeout=15); assert r.status == 200; srv.shutdown(); srv.server_close(); print('SERVER_SMOKE_OK', port)"
 
-      - name: Native pywebview & full Playwright E2E test (Windows & macOS)
+      - name: Native pywebview smoke test (Windows & macOS)
         if: runner.os == 'Windows' || runner.os == 'macOS'
         env:
           ONYXTUBE_DISABLE_DESKTOP_NOTIFY: "1"
         run: |
           python desktop.py --backend pywebview --port 0 --smoke-ms 1200
+
+      - name: Full Playwright E2E test (Windows & macOS)
+        if: runner.os == 'Windows' || runner.os == 'macOS'
+        env:
+          ONYXTUBE_DISABLE_DESKTOP_NOTIFY: "1"
+        run: |
           python -m pip install playwright
           python -m playwright install chromium
           python test_e2e.py

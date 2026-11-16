@@ -282,6 +282,13 @@ def _run_pywebview(httpd, actual_port: int, smoke_ms: int) -> int:
                 window.destroy()
             except Exception:
                 pass
+            time.sleep(0.25)
+            try:
+                httpd.server_close()
+                httpd.shutdown()
+            except Exception:
+                pass
+            os._exit(0)
 
         threading.Thread(target=_auto_close, daemon=True, name="onyxtube-smoke-close").start()
 
