@@ -40,3 +40,33 @@ jobs:
         run: |
           python desktop.py --backend browser --port 0 --smoke-ms 500
           python -c "import server; srv, port = server.start_background_server('127.0.0.1', 0); import urllib.request; r = urllib.request.urlopen(f'http://127.0.0.1:{port}/api/ytdlp', timeout=5); assert r.status == 200; srv.server_close(); srv.shutdown(); print('SERVER_SMOKE_OK', port)"
+
+  test-linux-distros:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - distro: ubuntu:22.04
+            install: "apt-get update && apt-get install -y python3 yt-dlp"
+          - distro: ubuntu:24.04
+            install: "apt-get update && apt-get install -y python3 yt-dlp"
+          - distro: debian:bookworm
+            install: "apt-get update && apt-get install -y python3 yt-dlp"
+          - distro: fedora:41
+            install: "dnf install -y python3 yt-dlp"
+          - distro: archlinux:latest
+            install: "pacman -Sy --noconfirm python yt-dlp"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run OnyxTube smoke test in ${{ matrix.distro }}
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/app" -w /app \
+            -e ONYXTUBE_DISABLE_DESKTOP_NOTIFY=1 \
+            "${{ matrix.distro }}" bash -lc "
+              set -e
+              ${{ matrix.install }}
+              python3 -m py_compile desktop.py server.py
+              python3 desktop.py --port 0 --smoke-ms 500
+              python3 -c \"import server, urllib.request; srv, port = server.start_background_server('127.0.0.1', 0); assert urllib.request.urlopen(f'http://127.0.0.1:{port}/api/ytdlp', timeout=5).status == 200; assert urllib.request.urlopen(f'http://127.0.0.1:{port}/index.html', timeout=5).status == 200; srv.server_close(); srv.shutdown(); print('DISTRO_OK:', '${{ matrix.distro }}')\"
+            "

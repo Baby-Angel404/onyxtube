@@ -26,6 +26,16 @@ jobs:
         run: |
           chmod +x build-appimage.sh
           ./build-appimage.sh
+      - name: Smoke test Linux AppImage across distros
+        env:
+          ONYXTUBE_DISABLE_DESKTOP_NOTIFY: "1"
+        run: |
+          ./dist/OnyxTube-x86_64.AppImage --appimage-extract-and-run --port 0 --smoke-ms 800
+          for img in ubuntu:22.04 ubuntu:24.04 debian:bookworm fedora:41 archlinux:latest; do
+            echo "=== Testing AppImage in $img ==="
+            docker run --rm -v "${{ github.workspace }}/dist:/dist" -e ONYXTUBE_DISABLE_DESKTOP_NOTIFY=1 "$img" \
+              /dist/OnyxTube-x86_64.AppImage --appimage-extract-and-run --port 0 --smoke-ms 800
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: OnyxTube-Linux-x86_64.AppImage
@@ -54,6 +64,11 @@ jobs:
             --hidden-import webview `
             --hidden-import yt_dlp `
             desktop.py
+      - name: Smoke test built Windows EXE
+        env:
+          ONYXTUBE_DISABLE_DESKTOP_NOTIFY: "1"
+        run: |
+          .\dist\OnyxTube-Windows-x86_64.exe --port 0 --smoke-ms 1200
       - uses: actions/upload-artifact@v4
         with:
           name: OnyxTube-Windows-x86_64.exe
@@ -82,6 +97,13 @@ jobs:
             --hidden-import yt_dlp \
             desktop.py
           hdiutil create -volname "OnyxTube" -srcfolder dist/OnyxTube.app -ov -format UDZO dist/OnyxTube-macOS.dmg
+      - name: Smoke test built macOS DMG
+        env:
+          ONYXTUBE_DISABLE_DESKTOP_NOTIFY: "1"
+        run: |
+          hdiutil attach dist/OnyxTube-macOS.dmg -nobrowse -mountpoint /Volumes/OnyxTubeTest
+          /Volumes/OnyxTubeTest/OnyxTube.app/Contents/MacOS/OnyxTube --port 0 --smoke-ms 1200
+          hdiutil detach /Volumes/OnyxTubeTest
       - uses: actions/upload-artifact@v4
         with:
           name: OnyxTube-macOS.dmg

@@ -29,19 +29,30 @@ from server import _default_app_data_dir, start_background_server  # noqa: E402
 DEFAULT_DESKTOP_PORT = 18472
 
 
-def _has_gtk_webkit() -> bool:
+def _detect_webkit2_version() -> str | None:
     if platform.system() != "Linux":
-        return False
+        return None
+    if not (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")):
+        return None
     try:
         os.environ.setdefault("GST_PLUGIN_FEATURE_RANK", "vah264dec:NONE,vavp9dec:NONE")
         import gi
 
         gi.require_version("Gtk", "3.0")
         gi.require_version("Gdk", "3.0")
-        gi.require_version("WebKit2", "4.1")
-        return True
+        for ver in ("4.1", "4.0"):
+            try:
+                gi.require_version("WebKit2", ver)
+                return ver
+            except Exception:
+                continue
     except Exception:
-        return False
+        return None
+    return None
+
+
+def _has_gtk_webkit() -> bool:
+    return _detect_webkit2_version() is not None
 
 
 def build_webview(data_dir: Path):
@@ -51,7 +62,8 @@ def build_webview(data_dir: Path):
 
     gi.require_version("Gtk", "3.0")
     gi.require_version("Gdk", "3.0")
-    gi.require_version("WebKit2", "4.1")
+    webkit_ver = _detect_webkit2_version() or "4.1"
+    gi.require_version("WebKit2", webkit_ver)
     from gi.repository import Gtk, WebKit2  # noqa: E402
 
     data_dir.mkdir(parents=True, exist_ok=True)
