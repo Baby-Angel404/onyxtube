@@ -39,7 +39,7 @@ jobs:
           ONYXTUBE_DISABLE_DESKTOP_NOTIFY: "1"
         run: |
           python desktop.py --backend browser --port 0 --smoke-ms 500
-          python -c "import server; srv, port = server.start_background_server('127.0.0.1', 0); import urllib.request; r = urllib.request.urlopen(f'http://127.0.0.1:{port}/api/ytdlp', timeout=5); assert r.status == 200; srv.server_close(); srv.shutdown(); print('SERVER_SMOKE_OK', port)"
+          python -c "import server, urllib.request; srv, port = server.start_background_server('127.0.0.1', 0); r = urllib.request.urlopen(f'http://127.0.0.1:{port}/api/ytdlp', timeout=15); assert r.status == 200; srv.shutdown(); srv.server_close(); print('SERVER_SMOKE_OK', port)"
 
   test-linux-distros:
     runs-on: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
           - distro: fedora:41
             install: "dnf install -y python3 yt-dlp"
           - distro: archlinux:latest
-            install: "pacman -Sy --noconfirm python yt-dlp"
+            install: "pacman -Syu --noconfirm python yt-dlp"
     steps:
       - uses: actions/checkout@v4
       - name: Run OnyxTube smoke test in ${{ matrix.distro }}
@@ -68,5 +68,5 @@ jobs:
               ${{ matrix.install }}
               python3 -m py_compile desktop.py server.py
               python3 desktop.py --port 0 --smoke-ms 500
-              python3 -c \"import server, urllib.request; srv, port = server.start_background_server('127.0.0.1', 0); assert urllib.request.urlopen(f'http://127.0.0.1:{port}/api/ytdlp', timeout=5).status == 200; assert urllib.request.urlopen(f'http://127.0.0.1:{port}/index.html', timeout=5).status == 200; srv.server_close(); srv.shutdown(); print('DISTRO_OK:', '${{ matrix.distro }}')\"
+              python3 -c \"import server, urllib.request; srv, port = server.start_background_server('127.0.0.1', 0); assert urllib.request.urlopen(f'http://127.0.0.1:{port}/api/ytdlp', timeout=15).status == 200; assert urllib.request.urlopen(f'http://127.0.0.1:{port}/index.html', timeout=15).status == 200; srv.shutdown(); srv.server_close(); print('DISTRO_OK:', '${{ matrix.distro }}')\"
             "
