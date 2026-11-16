@@ -55,7 +55,7 @@ jobs:
         run: |
           python -m pip install playwright
           python -m playwright install chromium
-          python test_e2e.py
+          python test_ci_e2e.py
 
   test-linux-distros:
     runs-on: ubuntu-latest
