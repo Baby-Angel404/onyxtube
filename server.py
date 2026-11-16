@@ -54,7 +54,7 @@ def _ipv4_first_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
 
 socket.getaddrinfo = _ipv4_first_getaddrinfo  # type: ignore[assignment]
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 # Only the UI assets the app actually loads; everything else in the project tree stays private.
 STATIC_FILES = {
     "/": "index.html",
@@ -89,7 +89,7 @@ def _resolve_ytdlp_cmd() -> list[str]:
     for cand in candidates:
         if cand and Path(cand).is_file() and (os.name == "nt" or os.access(cand, os.X_OK)):
             return [cand]
-    if find_spec("yt_dlp") is not None:
+    if not getattr(sys, "frozen", False) and find_spec("yt_dlp") is not None:
         return [sys.executable, "-m", "yt_dlp"]
     return []
 
@@ -1220,10 +1220,23 @@ YTDLP_UPGRADE_IN_FLIGHT: set[str] = set()
 def _run_ytdlp_json(video_id: str) -> dict:
     yt_cmd = _resolve_ytdlp_cmd()
     if not yt_cmd:
-        raise RuntimeError(
-            "yt-dlp tidak ditemukan. Pasang yt-dlp (pip install yt-dlp / pipx install yt-dlp) "
-            "atau set ONYXTUBE_YTDLP ke path binary-nya, lalu mulai ulang aplikasi."
-        )
+        try:
+            import yt_dlp  # type: ignore[import-not-found]
+
+            opts = {
+                "quiet": True,
+                "no_warnings": True,
+                "noplaylist": True,
+                "skip_download": True,
+                "cachedir": str(APP_CACHE_DIR / "ytdlp"),
+            }
+            with yt_dlp.YoutubeDL(opts) as ydl:
+                return ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False)
+        except Exception as exc:
+            raise RuntimeError(
+                "yt-dlp tidak ditemukan. Pasang yt-dlp (pip install yt-dlp / pipx install yt-dlp) "
+                "atau set ONYXTUBE_YTDLP ke path binary-nya, lalu mulai ulang aplikasi."
+            ) from exc
     cmd = [
         *yt_cmd,
         "--force-ipv4",

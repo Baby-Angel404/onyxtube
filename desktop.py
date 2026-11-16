@@ -20,8 +20,9 @@ import time
 import webbrowser
 from pathlib import Path
 
-APP_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(APP_DIR))
+APP_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+if str(APP_DIR) not in sys.path:
+    sys.path.insert(0, str(APP_DIR))
 
 from server import _default_app_data_dir, start_background_server  # noqa: E402
 
@@ -274,12 +275,15 @@ def _run_pywebview(httpd, actual_port: int, smoke_ms: int) -> int:
 
     try:
         webview.start(private_mode=False)
+    except Exception:
+        return _run_browser_app_fallback(httpd, actual_port, smoke_ms)
     finally:
-        try:
-            httpd.server_close()
-            httpd.shutdown()
-        except Exception:
-            pass
+        if not httpd._BaseServer__is_shut_down if hasattr(httpd, "_BaseServer__is_shut_down") else False:
+            try:
+                httpd.server_close()
+                httpd.shutdown()
+            except Exception:
+                pass
     return 0
 
 

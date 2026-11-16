@@ -9,6 +9,7 @@ venv/
 dist/
 build/
 *.egg-info/
+*.AppImage
 .webkit-repro/
 .agents/
 CLAUDE.md

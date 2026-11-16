@@ -33,6 +33,13 @@ chmod +x launch-onyxtube.sh launch-onyxtube.command
 ./launch-onyxtube.sh
 ```
 
+## Prebuilt Releases (AppImage, Windows EXE, macOS DMG)
+
+Push a version tag (e.g. `git tag v1.0.0 && git push origin v1.0.0`) or trigger **Build Cross-Platform Releases** manually in GitHub Actions to generate:
+- **Linux**: `OnyxTube-Linux-x86_64.AppImage` (also buildable locally via `./build-appimage.sh`)
+- **Windows**: `OnyxTube-Windows-x86_64.exe`
+- **macOS**: `OnyxTube-macOS.dmg`
+
 ## Running Tests
 
 ```bash
